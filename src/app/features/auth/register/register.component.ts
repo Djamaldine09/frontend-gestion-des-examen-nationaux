@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { NgxIntlTelInputModule, SearchCountryField, CountryISO } from 'ngx-intl-tel-input-gg';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, NgxIntlTelInputModule],
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss']
 })
@@ -16,6 +17,9 @@ export class RegisterComponent {
   isLoading = false;
   errorMessage = '';
   showPassword = false;
+  SearchCountryField = SearchCountryField;
+  CountryISO = CountryISO;
+  
 
   readonly roles = [
     { value: 'CANDIDAT', label: 'Candidat', description: 'Inscription aux examens' },
@@ -33,7 +37,7 @@ export class RegisterComponent {
       nom: ['', [Validators.required, Validators.minLength(2)]],
       prenom: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
-      telephone: ['', [Validators.pattern(/^(\+261|0)[0-9]{9}$/)]],
+      telephone: [null],
       role: ['CANDIDAT', Validators.required],
       motDePasse: ['', [Validators.required, Validators.minLength(6)]]
     });

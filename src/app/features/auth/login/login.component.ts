@@ -1,8 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { HttpClient } from '@angular/common/http';
+import { SocialAuthService, GoogleLoginProvider } from '@abacritt/angularx-social-login';
 
 @Component({
   selector: 'app-login',
@@ -17,11 +19,46 @@ export class LoginComponent {
   errorMessage = '';
   showPassword = false;
 
-  constructor(
-    private fb: FormBuilder,
-    private authService: AuthService,
-    private router: Router
-  ) {
+  private fb = inject(FormBuilder);
+  private authService = inject(AuthService);
+  private http = inject(HttpClient);
+  private router = inject(Router);
+  private socialAuthService = inject(SocialAuthService);
+
+  loginWithGoogle(): void {
+    // 1. Ouvre le popup Google
+    this.socialAuthService.signIn(GoogleLoginProvider.PROVIDER_ID).then((user) => {
+      
+      // 2. Récupère le jeton sécurisé de Google
+      const googleToken = user.idToken;
+
+      // 3. Envoie le jeton à ton backend Express
+      this.http.post('http://localhost:3000/api/auth/google', { token: googleToken })
+        .subscribe({
+          next: (response: any) => {
+            // 4. Succès ! Ton backend a renvoyé ton JWT
+            localStorage.setItem('token', response.jwt);
+            console.log('Connexion réussie au système national !');
+            // Redirection vers le tableau de bord...
+          },
+          error: (err) => console.error('Erreur backend', err)
+        });
+    });
+  }
+
+  loginWithFacebook(): void {
+    console.log('Redirection vers Facebook Auth...');
+    // Logique d'authentification Facebook
+  }
+
+  loginWithPhone(): void {
+    console.log('Ouverture du composant de connexion par SMS...');
+    // Redirection vers une route ou ouverture d'un modal pour le téléphone
+  }
+
+
+
+  constructor() {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       motDePasse: ['', [Validators.required, Validators.minLength(6)]]

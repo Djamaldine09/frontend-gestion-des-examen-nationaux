@@ -6,6 +6,11 @@
     "analytics": "679efcee-7e09-4ff3-8230-9921481a0275"
   },
   "newProjectRoot": "projects",
+  "schematics": {
+    "@schematics/angular:component": {
+      "style": "scss"
+    }
+  },
   "projects": {
     "frontend": {
       "projectType": "application",
@@ -26,6 +31,7 @@
               }
             ],
             "styles": [
+              "node_modules/intl-tel-input/dist/css/intlTelInput.css",
               "src/styles.css"
             ],
             "server": "src/main.server.ts",
@@ -63,6 +69,9 @@
         },
         "serve": {
           "builder": "@angular/build:dev-server",
+          "options": {
+            "allowedHosts": ["*"]
+          },
           "configurations": {
             "production": {
               "buildTarget": "frontend:build:production"
